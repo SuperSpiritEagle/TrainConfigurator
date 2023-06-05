@@ -15,7 +15,7 @@ namespace TrainConfigurator
 
     class RailwayStation
     {
-        private Queue<Direction> _directions = new Queue<Direction>();
+        private List<Direction> _directions = new List<Direction>();
         private Train _train = new Train();
 
         private bool _isWork = true;
@@ -48,30 +48,30 @@ namespace TrainConfigurator
             _directions.Clear();
 
             Console.WriteLine("Откуда");
-            string whereFrom = Console.ReadLine();
+            string pointDeparture = Console.ReadLine();
 
             Console.WriteLine("Куда");
-            string where = Console.ReadLine();
+            string pointArrival = Console.ReadLine();
 
-            _directions.Enqueue(new Direction(whereFrom, where));
+            _directions.Add(new Direction(pointDeparture, pointArrival));
         }
 
         private int SellTickets()
         {
             Random random = new Random();
 
-            int minNumberPassengers = 1;
-            int maxNumberPassengers = 100;
-            int numberPassengers;
+            int minCounPassengers = 1;
+            int maxCountPassengers = 100;
+            int counPassengers;
 
-            numberPassengers = random.Next(minNumberPassengers, maxNumberPassengers);
+            counPassengers = random.Next(minCounPassengers, maxCountPassengers);
 
-            return numberPassengers;
+            return counPassengers;
         }
 
         private void ShowDirection()
         {
-            foreach (var direction in _directions)
+            foreach (Direction direction in _directions)
             {
                 direction.ShowInfo();
             }
@@ -88,26 +88,28 @@ namespace TrainConfigurator
 
             while (_isWork)
             {
-                if (_train.CreateWagon() == true)
+                if (_train.CreateWagon())
                 {
-                    if (_train.CreateCapacity() == true)
+                    if (_train.CreateCapacity())
                     {
                         if (numberTickets <= _train.GetCapacity())
                         {
-                            Console.WriteLine("Поезд создан! счастливого пути!");
+                            Console.WriteLine($"Поезд [{_directions[0]._pointDeparture}] [{_directions[0]._pointArrival}] создан! счастливого пути!");
 
                             System.Threading.Thread.Sleep(3000);
                             Console.Clear();
 
-                            break;
+                            _isWork = false;
                         }
                         else
                         {
-                            Console.WriteLine("Недостаточно мест для пассажиров");
+                            Console.WriteLine("Недостаточно мест для пассажиров!!!\n");
                         }
                     }
                 }
             }
+
+            _isWork = true;
         }
     }
 
@@ -115,31 +117,31 @@ namespace TrainConfigurator
     {
         public Direction(string whereFrom, string where)
         {
-            WhereFrom = whereFrom;
-            Where = where;
+            _pointDeparture = whereFrom;
+            _pointArrival = where;
         }
 
-        public string WhereFrom { get; private set; }
-        public string Where { get; private set; }
+        public string _pointDeparture { get; private set; }
+        public string _pointArrival { get; private set; }
 
         public void ShowInfo()
         {
-            Console.WriteLine($"Откуда {WhereFrom} Куда {Where}");
+            Console.WriteLine($"Откуда {_pointDeparture} Куда {_pointArrival}");
         }
     }
 
     class Train
     {
-        private int numberWagons;
-        private int capacity;
+        private int _countWagons;
+        private int _capacity;
 
         public bool CreateWagon()
         {
             Console.WriteLine("Введите количество вагонов");
 
-            int.TryParse(Console.ReadLine(), out numberWagons);
+            int.TryParse(Console.ReadLine(), out _countWagons);
 
-            if (numberWagons <= 0)
+            if (_countWagons <= 0)
             {
                 Console.WriteLine("Ошибка! Введены не коректный данные. Повторите попытку.");
                 return false;
@@ -154,9 +156,9 @@ namespace TrainConfigurator
         {
             Console.WriteLine("Введите вместимость вагонов");
 
-            int.TryParse(Console.ReadLine(), out capacity);
+            int.TryParse(Console.ReadLine(), out _capacity);
 
-            if (capacity <= 0)
+            if (_capacity <= 0)
             {
                 Console.WriteLine("Ошибка! Введены не коректный данные. Повторите попытку.");
                 return false;
@@ -169,7 +171,7 @@ namespace TrainConfigurator
 
         public int GetCapacity()
         {
-            return numberWagons * capacity;
+            return _countWagons * _capacity;
         }
     }
 }
